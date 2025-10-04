@@ -4,8 +4,8 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { createCommand } from './commands/create';
  import { listCommand } from './commands/list';
-// import { showCommand } from './commands/show';
-// import { progressCommand } from './commands/progress';
+import { showCommand } from './commands/show';
+ import { progressCommand } from './commands/progress';
 
 const program = new Command();
 
@@ -17,8 +17,8 @@ program
 // Add commands
  program.addCommand(createCommand);
  program.addCommand(listCommand);
-// program.addCommand(showCommand);
-// program.addCommand(progressCommand);
+ program.addCommand(showCommand);
+ program.addCommand(progressCommand);
 
 // Custom help
 program.on('--help', () => {
