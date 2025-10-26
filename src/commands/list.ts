@@ -1,67 +1,46 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import ora from 'ora';
+import { FileStorage } from '../storage/FileStorage';
 
 export const listCommand = new Command('list')
   .description('List all saved coding plans')
   .option('-s, --status <status>', 'Filter by status (planning/in-progress/completed/paused)')
   .option('-l, --limit <number>', 'Maximum number of plans to show', '10')
   .action(async (options) => {
-    console.log(chalk.blue(' Loading your plans...'));
+    console.log(chalk.blue('📚 Loading your plans...'));
     
+    const storage = new FileStorage();
     const spinner = ora('Fetching plans...').start();
     
     try {
-      // Simulate loading plans for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Load real plans from storage
+      let plans = await storage.listPlans();
       
       spinner.succeed('Plans loaded!');
       
-      // Mock data for now (later we'll load from files)
-      const mockPlans = [
-        {
-          id: 'todo-app-' + Date.now(),
-          title: 'Build a todo app',
-          status: 'in-progress',
-          createdAt: new Date(),
-          progress: { percentage: 60, completedSteps: 3, totalSteps: 5 }
-        },
-        {
-          id: 'rest-api-' + (Date.now() - 100000),
-          title: 'Build a REST API',
-          status: 'completed',
-          createdAt: new Date(Date.now() - 86400000), // 1 day ago
-          progress: { percentage: 100, completedSteps: 4, totalSteps: 4 }
-        },
-        {
-          id: 'react-dashboard-' + (Date.now() - 200000),
-          title: 'Build a React dashboard',
-          status: 'planning',
-          createdAt: new Date(Date.now() - 172800000), // 2 days ago
-          progress: { percentage: 0, completedSteps: 0, totalSteps: 6 }
-        }
-      ];
-      
       // Filter by status if provided
-      let filteredPlans = mockPlans;
       if (options.status) {
-        filteredPlans = mockPlans.filter(plan => plan.status === options.status);
+        plans = plans.filter(plan => plan.status === options.status);
       }
       
       // Limit results
       const limit = parseInt(options.limit);
-      filteredPlans = filteredPlans.slice(0, limit);
+      plans = plans.slice(0, limit);
       
-      if (filteredPlans.length === 0) {
-        console.log(chalk.yellow('\n No plans found'));
-        console.log(chalk.gray(' Create your first plan with: code-planner create "your task"'));
+      if (plans.length === 0) {
+        console.log(chalk.yellow('\n📝 No plans found'));
+        if (options.status) {
+          console.log(chalk.gray(`   No plans with status: ${options.status}`));
+        }
+        console.log(chalk.gray('💡 Create your first plan with: code-planner create "your task"'));
         return;
       }
       
-      console.log(chalk.green(`\n Found ${filteredPlans.length} plan(s):`));
-      console.log(chalk.gray('─'.repeat(60)));
+      console.log(chalk.green(`\n📋 Found ${plans.length} plan(s):`));
+      console.log(chalk.gray('─'.repeat(70)));
       
-      filteredPlans.forEach((plan, index) => {
+      plans.forEach((plan, index) => {
         const statusColor = getStatusColor(plan.status);
         const progressBar = createProgressBar(plan.progress.percentage);
         
@@ -72,16 +51,19 @@ export const listCommand = new Command('list')
         console.log(`   ${chalk.gray('Progress:')} ${progressBar} ${plan.progress.percentage}% (${plan.progress.completedSteps}/${plan.progress.totalSteps})`);
       });
       
-      console.log(chalk.gray('\n─'.repeat(60)));
-      console.log(chalk.gray(' Use "code-planner show <plan-id>" to view details'));
+      console.log(chalk.gray('\n─'.repeat(70)));
+      console.log(chalk.gray('💡 Use "code-planner show <plan-id>" to view details'));
+      console.log(chalk.gray('⚡ Use "code-planner progress <plan-id>" to update progress'));
       
-    } catch (error) {
+    } catch (error: unknown) { // Fixed TypeScript error
       spinner.fail('Failed to load plans');
-      console.error(chalk.red('Error:'), error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error(chalk.red('❌ Error:'), errorMessage);
+      process.exit(1);
     }
   });
 
-// Helper function to get status colors
+// Helper functions (same as before)
 function getStatusColor(status: string) {
   switch (status) {
     case 'completed': return chalk.green;
@@ -92,7 +74,6 @@ function getStatusColor(status: string) {
   }
 }
 
-// Helper function to create progress bar
 function createProgressBar(percentage: number): string {
   const barLength = 20;
   const filledLength = Math.round((percentage / 100) * barLength);

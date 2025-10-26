@@ -1,28 +1,51 @@
 {
-  "name": "codeplanner",
+  "name": "code-planner",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "AI-powered planning layer for coding tasks",
+  "main": "dist/cli.js",
+  "bin": {
+    "code-planner": "./dist/cli.js"
+  },
   "scripts": {
     "build": "tsc",
+    "start": "node dist/cli.js",
     "dev": "ts-node src/cli.ts",
-    "start": "node dist/cli.js"
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublish": "npm run build",
+    "cli": "node dist/cli.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "cli",
+    "ai",
+    "planning",
+    "development",
+    "project-management",
+    "gemini",
+    "coding"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
-    "chalk": "^5.6.2",
-    "commander": "^14.0.1",
-    "inquirer": "^12.9.6",
-    "ora": "^9.0.0"
+    "@google/generative-ai": "^0.17.1",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "dotenv": "^17.2.3",
+    "inquirer": "^9.2.12",
+    "ora": "^7.0.1"
   },
   "devDependencies": {
-    "@types/commander": "^2.12.0",
-    "@types/inquirer": "^9.0.9",
-    "@types/node": "^24.6.2",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
-  }
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.8.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "package.json"
+  ]
 }
