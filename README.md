@@ -1,3 +1,4 @@
+[screen-capture (4).webm](https://github.com/user-attachments/assets/dfddd957-5c5c-450e-bdbe-309018f813c9)
 #  codePlanner CLI
 
 AI-powered planning layer for coding tasks
